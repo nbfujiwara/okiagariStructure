@@ -51,15 +51,14 @@ var Main = (function () {
         this.renderer = renderer;
         this.camera = camera;
         this.scene = scene;
-        //        this.test3 = new THREE.Quaternion();
         switch (this.mode) {
             case Main.MODE_DEMO_H:
             case Main.MODE_DEMO_V:
                 this.startCameraRotation();
                 break;
             case Main.MODE_INTERACT:
-                this.renderer.domElement.addEventListener('mousedown', function (e) { return _this.mouseDownHandler4(e); });
-                this.renderer.domElement.addEventListener('mousemove', function (e) { return _this.mouseMoveHandler4(e); });
+                this.renderer.domElement.addEventListener('mousedown', function (e) { return _this.mouseDownHandler(e); });
+                this.renderer.domElement.addEventListener('mousemove', function (e) { return _this.mouseMoveHandler(e); });
                 this.renderer.domElement.addEventListener('mouseup', function (e) { return _this.mouseUpHandler(e); });
                 break;
         }
@@ -73,7 +72,7 @@ var Main = (function () {
         //this._trackballCtrl = new THREE.TrackballControls(this.camera);
         //this._trackballCtrl.noRotate = true;
     };
-    Main.prototype.mouseDownHandler4 = function (e) {
+    Main.prototype.mouseDownHandler = function (e) {
         this.mouseStartX = e.clientX;
         this.mouseStartY = e.clientY;
         this.isMouseDown = true;
@@ -83,10 +82,11 @@ var Main = (function () {
         this.startPos = camera.position.clone();
         this.startUp = camera.up.clone();
         this.v2 = camera.position.clone().normalize();
+        //        this.v2 = new THREE.Vector3(0,0,1);
         this.u2 = camera.up.clone().normalize();
         this.w2 = this.v2.clone().cross(this.u2).normalize();
     };
-    Main.prototype.mouseMoveHandler4 = function (e) {
+    Main.prototype.mouseMoveHandler = function (e) {
         if (!this.isMouseDown) {
             return;
         }
@@ -126,7 +126,6 @@ var Main = (function () {
         this.tick();
     };
     Main.prototype.tick = function () {
-        //this._trackballCtrl.update();
         var _this = this;
         switch (this.mode) {
             case Main.MODE_DEMO_H:

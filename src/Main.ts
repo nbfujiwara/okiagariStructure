@@ -92,19 +92,14 @@ class Main
         this.camera = camera;
         this.scene = scene;
 
-
-//        this.test3 = new THREE.Quaternion();
-
-
-
         switch(this.mode){
             case Main.MODE_DEMO_H :
             case Main.MODE_DEMO_V :
                 this.startCameraRotation();
                 break;
             case Main.MODE_INTERACT :
-                this.renderer.domElement.addEventListener('mousedown', (e) => this.mouseDownHandler4(e));
-                this.renderer.domElement.addEventListener('mousemove', (e) => this.mouseMoveHandler4(e));
+                this.renderer.domElement.addEventListener('mousedown', (e) => this.mouseDownHandler(e));
+                this.renderer.domElement.addEventListener('mousemove', (e) => this.mouseMoveHandler(e));
                 this.renderer.domElement.addEventListener('mouseup', (e) => this.mouseUpHandler(e));
                 break;
         }
@@ -132,7 +127,7 @@ class Main
     private startPos;
     private startUp;
 
-    private mouseDownHandler4(e){
+    private mouseDownHandler(e){
         this.mouseStartX = e.clientX;
         this.mouseStartY = e.clientY;
         this.isMouseDown = true;
@@ -145,11 +140,12 @@ class Main
         this.startUp = camera.up.clone();
 
         this.v2 = camera.position.clone().normalize();
+//        this.v2 = new THREE.Vector3(0,0,1);
         this.u2 = camera.up.clone().normalize();
         this.w2 = this.v2.clone().cross(this.u2).normalize();
 
     }
-    private mouseMoveHandler4(e){
+    private mouseMoveHandler(e){
         if(! this.isMouseDown){
             return;
         }
@@ -212,8 +208,6 @@ class Main
 
     private tick(){
 
-        //this._trackballCtrl.update();
-
         switch(this.mode){
             case Main.MODE_DEMO_H :
                 this.moveCameraRotation(1 , 0);
@@ -227,8 +221,6 @@ class Main
 
         requestAnimationFrame( () => this.tick() );
         this.renderer.render( this.scene, this.camera );
-
-
 
     }
 
