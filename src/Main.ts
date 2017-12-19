@@ -17,10 +17,10 @@ class Main
     private isMouseDown:boolean;
     private mouseBaseX:number;
     private mouseBaseY:number;
-    private cameraBasePosition;
-    private cameraBaseUp;
-    private cameraBaseUpCross;
-    private cameraRadius = 700;
+    private cameraBasePosition:THREE.Vector3;
+    private cameraBaseUp:THREE.Vector3;
+    private cameraBaseUpCross:THREE.Vector3;
+    private cameraRadius:number = 700;
 
     private mode;
 
