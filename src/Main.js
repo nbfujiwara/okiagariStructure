@@ -65,52 +65,50 @@ var Main = (function () {
     };
     Main.prototype.initHelper = function () {
         //座標
-        var axis = new THREE.AxisHelper(1000);
-        this.scene.add(axis);
-        axis.position.set(0, 0, 0);
+        if (this.mode == Main.MODE_DEMO_V) {
+            var axis = new THREE.AxisHelper(1000);
+            this.scene.add(axis);
+            axis.position.set(0, 0, 0);
+        }
         //マウスで簡易操作
         //this._trackballCtrl = new THREE.TrackballControls(this.camera);
         //this._trackballCtrl.noRotate = true;
     };
     Main.prototype.mouseDownHandler = function (e) {
-        this.mouseStartX = e.clientX;
-        this.mouseStartY = e.clientY;
         this.isMouseDown = true;
-        var camera = this.camera;
-        this.sx = e.clientX;
-        this.sz = e.clientY;
-        this.startPos = camera.position.clone();
-        this.startUp = camera.up.clone();
-        this.v2 = camera.position.clone().normalize();
-        //        this.v2 = new THREE.Vector3(0,0,1);
-        this.u2 = camera.up.clone().normalize();
-        this.w2 = this.v2.clone().cross(this.u2).normalize();
+        this.setBaseInfo(e.clientX, e.clientY);
     };
     Main.prototype.mouseMoveHandler = function (e) {
         if (!this.isMouseDown) {
             return;
         }
-        var mx = e.clientX - this.mouseStartX;
-        var my = e.clientY - this.mouseStartY;
-        var camera = this.camera;
-        var newPos = this.startPos.clone();
+        var mx = e.clientX - this.mouseBaseX;
+        var my = e.clientY - this.mouseBaseY;
+        var newPos = this.cameraBasePosition.clone();
         var deltaQuat = new THREE.Quaternion();
         var deltaQuatX = new THREE.Quaternion();
         var deltaQuatZ = new THREE.Quaternion();
-        deltaQuatX.setFromAxisAngle(this.u2, -mx * Math.PI / 180);
-        deltaQuatZ.setFromAxisAngle(this.w2, my * Math.PI / 180);
+        deltaQuatX.setFromAxisAngle(this.cameraBaseUp, -mx * Math.PI / 180);
+        deltaQuatZ.setFromAxisAngle(this.cameraBaseUpCross, my * Math.PI / 180);
         deltaQuat.multiply(deltaQuatX).multiply(deltaQuatZ);
         newPos.applyQuaternion(deltaQuat);
         this.camera.position.set(newPos.x, newPos.y, newPos.z);
-        var newUp = this.startUp.clone();
-        deltaQuat.setFromAxisAngle(this.w2, my * Math.PI / 180);
+        var newUp = this.cameraBaseUp.clone();
+        deltaQuat.setFromAxisAngle(this.cameraBaseUpCross, my * Math.PI / 180);
         newUp.applyQuaternion(deltaQuat);
         this.camera.up.set(newUp.x, newUp.y, newUp.z);
         this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+        this.setBaseInfo(e.clientX, e.clientY);
+    };
+    Main.prototype.setBaseInfo = function (x, y) {
+        this.mouseBaseX = x;
+        this.mouseBaseY = y;
+        this.cameraBasePosition = this.camera.position.clone();
+        this.cameraBaseUp = this.camera.up.clone();
+        this.cameraBaseUpCross = this.cameraBasePosition.clone().cross(this.cameraBaseUp).normalize();
     };
     Main.prototype.mouseUpHandler = function (e) {
         this.isMouseDown = false;
-        console.log('mouseUp');
     };
     Main.prototype.startCameraRotation = function () {
         this.phi = Math.asin(this.camera.position.z / this.cameraRadius);

@@ -10,13 +10,16 @@ class Main
     private scene:THREE.Scene;
     private camera:THREE.PerspectiveCamera;
 
-    private mouseStartX:number;
-    private mouseStartY:number;
-    private isMouseDown:boolean;
 
     private phi;
     private theta;
 
+    private isMouseDown:boolean;
+    private mouseBaseX:number;
+    private mouseBaseY:number;
+    private cameraBasePosition;
+    private cameraBaseUp;
+    private cameraBaseUpCross;
     private cameraRadius = 700;
 
     private mode;
@@ -25,7 +28,6 @@ class Main
     static MODE_DEMO_V = 2;
     static MODE_INTERACT = 3;
 
-    private mainObj:THREE.Group;
 
     constructor(_mode:number) {
 
@@ -106,9 +108,12 @@ class Main
     }
     private initHelper(){
         //座標
-        let  axis = new THREE.AxisHelper(1000);
-        this.scene.add(axis);
-        axis.position.set(0,0,0);
+
+        if(this.mode == Main.MODE_DEMO_V){
+            let  axis = new THREE.AxisHelper(1000);
+            this.scene.add(axis);
+            axis.position.set(0,0,0);
+        }
 
         //マウスで簡易操作
         //this._trackballCtrl = new THREE.TrackballControls(this.camera);
@@ -118,64 +123,47 @@ class Main
 
 
 
-    private v2;
-    private u2;
-    private w2;
-    private sx;
-    private sz;
 
-    private startPos;
-    private startUp;
 
     private mouseDownHandler(e){
-        this.mouseStartX = e.clientX;
-        this.mouseStartY = e.clientY;
         this.isMouseDown = true;
-
-        let camera = this.camera;
-        this.sx = e.clientX;
-        this.sz = e.clientY;
-
-        this.startPos = camera.position.clone();
-        this.startUp = camera.up.clone();
-
-        this.v2 = camera.position.clone().normalize();
-//        this.v2 = new THREE.Vector3(0,0,1);
-        this.u2 = camera.up.clone().normalize();
-        this.w2 = this.v2.clone().cross(this.u2).normalize();
-
+        this.setBaseInfo(e.clientX , e.clientY);
     }
     private mouseMoveHandler(e){
         if(! this.isMouseDown){
             return;
         }
-        let mx = e.clientX - this.mouseStartX;
-        let my = e.clientY - this.mouseStartY;
+        let mx = e.clientX - this.mouseBaseX;
+        let my = e.clientY - this.mouseBaseY;
 
-
-        let camera = this.camera;
-
-        let newPos = this.startPos.clone();
+        let newPos = this.cameraBasePosition.clone();
         let deltaQuat = new THREE.Quaternion();
         let deltaQuatX = new THREE.Quaternion();
         let deltaQuatZ = new THREE.Quaternion();
-        deltaQuatX.setFromAxisAngle(this.u2 , -mx * Math.PI / 180);
-        deltaQuatZ.setFromAxisAngle(this.w2 , my * Math.PI / 180);
+        deltaQuatX.setFromAxisAngle(this.cameraBaseUp , -mx * Math.PI / 180);
+        deltaQuatZ.setFromAxisAngle(this.cameraBaseUpCross , my * Math.PI / 180);
         deltaQuat.multiply(deltaQuatX).multiply(deltaQuatZ);
         newPos.applyQuaternion(deltaQuat);
 
         this.camera.position.set(newPos.x,newPos.y,newPos.z);
 
-        let newUp = this.startUp.clone();
-        deltaQuat.setFromAxisAngle(this.w2 , my * Math.PI / 180);
+        let newUp = this.cameraBaseUp.clone();
+        deltaQuat.setFromAxisAngle(this.cameraBaseUpCross , my * Math.PI / 180);
         newUp.applyQuaternion(deltaQuat);
         this.camera.up.set(newUp.x,newUp.y,newUp.z);
         this.camera.lookAt(new THREE.Vector3(0,0,0));
 
+        this.setBaseInfo(e.clientX , e.clientY);
+    }
+    private setBaseInfo(x,y){
+        this.mouseBaseX = x;
+        this.mouseBaseY = y;
+        this.cameraBasePosition = this.camera.position.clone();
+        this.cameraBaseUp = this.camera.up.clone();
+        this.cameraBaseUpCross = this.cameraBasePosition.clone().cross(this.cameraBaseUp).normalize();
     }
     private mouseUpHandler(e){
         this.isMouseDown = false;
-        console.log('mouseUp');
     }
 
 
