@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Okiagari</title>
 
-    <script src="http://www.natural-science.or.jp/javascript/WebGL/glMatrix.js"></script>
-
     <script src="./libs/stats.min.js"></script>
     <script src="./libs/three.js"></script>
     <script src="./libs/TrackballControls.js"></script>
